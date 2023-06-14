@@ -1,0 +1,1 @@
+{"version":"1.0.0","name":"qcodem","dependencies":{"expo-barcode-scanner":{"version":"12.3.2"},"expo-status-bar":{"version":"1.4.4"},"expo":{"version":"48.0.19"},"react-native":{"version":"0.71.8"},"react":{"version":"18.2.0"}}}

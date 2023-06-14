@@ -8,9 +8,10 @@ import { fetcher } from './util/fetcher'
 
 export default function App() {
 
-  const host = Env.host
-  const _token = Env.token
-  
+  const host = Env.ISBN_HOST
+  const _token = Env.TOKEN
+  const _serverHost=Env.SERVER_HOST
+
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(null)
   const [text, setText] = useState('not scanned yet')
@@ -37,13 +38,18 @@ export default function App() {
   // When Click 'Search ISBN'
   const searchISBN = async (isbn)=>{
 
-    console.log(`token:${_token}`)
-    console.log(`host:${host}`)
     const url = host+'/book'+'/'+ isbn
-    console.log(`url:${url}`)
     const data = await fetcher(url, _token)
     
     console.log(data)
+  }
+
+  const testLocal = async (message) => {
+    
+    fetch(_serverHost)
+      .then(res=>res.text())
+      .then(data=>console.log(data))
+
   }
 
   // Check Permissions and return the screens
@@ -90,6 +96,12 @@ export default function App() {
 
         </View>
       }
+
+      <Button  title={'Test Local'} onPress={()=>{
+        testLocal()
+      }} color='tomato'/>
+
+
     </View>
   );
 }

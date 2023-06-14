@@ -3,8 +3,14 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 // import Barcode from './BarCode'
 import React, {useState, useEffect} from 'react'
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Env } from './dev/env'
+import { fetcher } from './util/fetcher'
 
 export default function App() {
+
+  const host = Env.host
+  const _token = Env.token
+  
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(null)
   const [text, setText] = useState('not scanned yet')
@@ -26,6 +32,18 @@ export default function App() {
     setScanned(true)
     setText(data)
     console.log('Type: ' + type + '\nData: '+ data)
+  }
+
+  // When Click 'Search ISBN'
+  const searchISBN = async (isbn)=>{
+
+    console.log(`token:${_token}`)
+    console.log(`host:${host}`)
+    const url = host+'/book'+'/'+ isbn
+    console.log(`url:${url}`)
+    const data = await fetcher(url, _token)
+    
+    console.log(data)
   }
 
   // Check Permissions and return the screens
@@ -56,11 +74,21 @@ export default function App() {
       </View>
       <Text style={styles.maintext}>{text}</Text>
       {
-        scanned && <Button title={'Scan again?'} onPress={()=>{
-          setScanned(false)
-          setText('')
-          }} color='tomato' />
-        
+        scanned && 
+        <View>
+
+          <Button title={'Scan again?'} onPress={()=>{
+            setScanned(false)
+            setText('')
+            }} color='tomato' />
+
+          <Button  title={'.'} onPress={()=>{}} color='white'/>
+
+          <Button  title={'Search ISBN'} onPress={()=>{
+            searchISBN(text)
+          }} color='tomato'/>
+
+        </View>
       }
     </View>
   );

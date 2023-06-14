@@ -19,3 +19,4 @@ web-build/
 # dev config
 dev/
 test/
+bin/

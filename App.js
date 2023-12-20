@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import React, {useState, useEffect} from 'react'
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Env } from './dev/env'
-import { fetcher } from './util/fetcher'
+import { fetcher, postData } from './util/fetcher'
 
 export default function App() {
 
@@ -15,6 +15,7 @@ export default function App() {
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(null)
   const [text, setText] = useState('not scanned yet')
+  const [bookData, setBookData] = useState({})
 
   const askForCameraPermission = () =>{
     (async()=>{
@@ -33,22 +34,23 @@ export default function App() {
     setScanned(true)
     setText(data)
     console.log('Type: ' + type + '\nData: '+ data)
+    
   }
 
   // When Click 'Search ISBN'
-  const searchISBN = async (isbn)=>{
-
+  const getISBN = async (isbn)=>{
     const url = host+'/book'+'/'+ isbn
-    const data = await fetcher(url, _token)
-    
-    console.log(data)
+    return await fetcher(url, _token)
   }
 
-  const testLocal = async (message) => {
-    
-    fetch(_serverHost)
-      .then(res=>res.text())
-      .then(data=>console.log(data))
+  const requestApiServer = async (payload) => {
+    const url = _serverHost + '/book/create'
+    // const mock = {
+    //   "title":"noddd",
+    //   "isbn":555,
+    //   "language":"chinese"
+    // }
+    return await postData(url, _token, payload)
 
   }
 
@@ -90,16 +92,31 @@ export default function App() {
 
           <Button  title={'.'} onPress={()=>{}} color='white'/>
 
-          <Button  title={'Search ISBN'} onPress={()=>{
-            searchISBN(text)
+          <Button  title={'Search ISBN'} onPress={ async ()=>{
+            const data = await getISBN(text)
+            console.log(data)
+            setBookData(data)
+            console.log(bookData)
+          }} color='tomato'/>
+
+          <Button  title={'.'} onPress={()=>{}} color='white'/>
+
+          <Button  title={'Append Record to DB'} onPress={()=>{
+            console.log(bookData.book.authors)
+            const payload = {
+              title: bookData.book.title,
+              isbn: bookData.book.isbn,
+              language: bookData.book.language
+            }
+            payload.title = "abcdef"
+            console.log("payload: ", payload)
+            requestApiServer(payload)
           }} color='tomato'/>
 
         </View>
       }
 
-      <Button  title={'Test Local'} onPress={()=>{
-        testLocal()
-      }} color='tomato'/>
+
 
 
     </View>
